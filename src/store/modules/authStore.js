@@ -15,10 +15,22 @@ export const useAuthStores = defineStore('authStore', {
         userId: '',
         apiUrl: import.meta.env.VITE_APP_API_URL,
         nocoUrl: import.meta.env.VITE_APP_NOCO_URL,
-        error: ''
+        error: '',
+        komponen:true,
+        user:[]
 
     }),
     actions: {
+        async fetchUser(){
+            const response = await axios.get(this.nocoUrl + 'api/v1/auth/user/me', {
+                headers: {
+                    'xc-auth': this.token
+                }
+            });
+
+            this.user = response.data
+            
+        },
         async doLogin(data) {
             try {
                 
@@ -53,9 +65,12 @@ export const useAuthStores = defineStore('authStore', {
                 // alert('Terjadi kesalahan. Periksa kembali email dan password Anda.');
                 console.error(error.response.data.msg);
 
-                await Toast.show({
-                    text:error.response.data.msg,
-                });
+                if(error.response.data.msg == 'Invalid credentials') {
+                    await Toast.show({
+                        text:'Email dan password anda salah !',
+                        duration:1000,
+                    });
+                }
 
                 this.error = 'Terjadi Kesalahan . Periksa kembali email dan password Anda';
 
@@ -69,7 +84,6 @@ export const useAuthStores = defineStore('authStore', {
                     password: data.password,
                 });
                 if (response.status === 200) {
-                    // alert('Berhasil login');
 
                     await Preferences.set({
                         key: 'token',
@@ -125,6 +139,9 @@ export const useAuthStores = defineStore('authStore', {
                 alert('Logout gagals')
 
             }
+        },
+        toggleKomponen(){
+            this.komponen = !this.komponen;
         }
 
 
@@ -133,11 +150,17 @@ export const useAuthStores = defineStore('authStore', {
         isLogin() {
             return this.login
         },
+        getKomponen(){
+            return this.komponen
+        },
         getToken() {
             return this.token
         },
         getError() {
             return this.error
+        },
+        getUser(){
+            return this.user
         },
         getUserId() {
             return this.userId

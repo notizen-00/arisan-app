@@ -29,7 +29,6 @@ router.beforeEach((to, from, next) => {
     const store = useStore()
 
     const Login = store.authStore.isLogin;
-    // const Login = true;
     if (to.path !== '/login' && !Login) {
         next('/login');
     } else {

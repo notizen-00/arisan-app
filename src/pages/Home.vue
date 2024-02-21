@@ -1,12 +1,25 @@
 <template>
-    Selamat Anda Berhasil Login 
+    <Navbar/>
+    <main class="h-screen w-1/2 my-40 mx-auto items-center justify-center">
 
-    <Tombol text="Logout" @click="store.authStore.doLogout()"/>
+        
+        <p class="flex">{{getUser.email}}</p>
+        <br>
+        <Tombol text="Logout" @click.prevent="store.authStore.doLogout()" iconClass="fas fa-right-from-bracket pr-2 pt-1" class="text-white"></Tombol>
+    </main>
     
 </template>
 
 <script setup>
-    import {inject} from 'vue'
-    import Tombol from '@/elements/Button.vue'
+    import {inject,onMounted} from 'vue'
+    import Navbar from '@/components/navbar/navbar.vue'
+    import {storeToRefs} from 'pinia'
+    import Tombol from '@/elements/Link.vue'
     const store = inject('store')
+
+    const {getUser,getToken} = storeToRefs(store.authStore)
+
+    onMounted(()=>{
+        store.authStore.fetchUser();
+    })
 </script>
