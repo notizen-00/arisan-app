@@ -2,7 +2,7 @@ import {
     createRouter,
     createWebHistory
 } from 'vue-router'
-import Home from '@/components/HelloWorld.vue'
+import Home from '@/pages/Home.vue'
 import Login from '@/pages/auth/Login.vue'
 import {
     useStore
@@ -28,8 +28,8 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
     const store = useStore()
 
-    // const Login = store.authStore.isLogin;
-    const Login = true;
+    const Login = store.authStore.isLogin;
+    // const Login = true;
     if (to.path !== '/login' && !Login) {
         next('/login');
     } else {

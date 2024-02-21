@@ -2,7 +2,9 @@ import {
     defineStore
 } from 'pinia'
 import axios from 'axios';
-import router from '@/router'
+import router from '@/router';
+import { Preferences } from '@capacitor/preferences';
+import { Toast } from '@capacitor/toast';
 
 
 export const useAuthStores = defineStore('authStore', {
@@ -12,15 +14,15 @@ export const useAuthStores = defineStore('authStore', {
         username: '',
         userId: '',
         apiUrl: import.meta.env.VITE_APP_API_URL,
+        nocoUrl: import.meta.env.VITE_APP_NOCO_URL,
         error: ''
 
     }),
     actions: {
-
         async doLogin(data) {
             try {
-        
-                const response = await axios.post(this.apiUrl + 'apis/login', {
+                
+                const response = await axios.post(this.nocoUrl + 'api/v1/auth/user/signin', {
                     email: data.email,
                     password: data.password,
                 });
@@ -29,31 +31,73 @@ export const useAuthStores = defineStore('authStore', {
 
                     await Preferences.set({
                         key: 'token',
-                        value: response.data.data.token,
+                        value: response.data.token,
                     });
-                    console.log('Berhasil login')
+
                     this.login = true;
-                    this.userId = response.data.data.userId;
-                    this.token = response.data.data.token;
-                    this.username = response.data.data.name;
-                    karyawanStore.fetchDetail();
-                    console.log(this.token);
-                    console.log(this.userId);
-                    console.log(this.username);
+                    this.token = response.data.token;
+                    await Toast.show({
+                        text: 'Anda Berhasil Signup',
+                        duration: 3000,
+                        position: 'top'
+                    });
                     router.push('/')
                 } else {
-                    alert('Login gagal');
+                    await Toast.show({
+                        text: 'Gagal Signup',
+                        duration: 3000,
+                        position: 'top'
+                    });
                 }
             } catch (error) {
                 // alert('Terjadi kesalahan. Periksa kembali email dan password Anda.');
-                console.error(error);
+                console.error(error.response.data.msg);
+
+                await Toast.show({
+                    text:error.response.data.msg,
+                });
+
+                this.error = 'Terjadi Kesalahan . Periksa kembali email dan password Anda';
+
+            }
+        },
+        async doRegister(data) {
+            try {
+                
+                const response = await axios.post(this.nocoUrl + 'api/v1/auth/user/signup', {
+                    email: data.email,
+                    password: data.password,
+                });
+                if (response.status === 200) {
+                    // alert('Berhasil login');
+
+                    await Preferences.set({
+                        key: 'token',
+                        value: response.data.token,
+                    });
+
+                    this.login = true;
+                    this.token = response.data.token;
+                    await Toast.show({
+                        text: 'Anda Berhasil Signup',
+                        duration: 3000,
+                        position: 'top'
+                    });
+                    router.push('/')
+                } else {
+                    await Toast.show({
+                        text: 'Gagal Signup',
+                        duration: 3000,
+                        position: 'top'
+                    });
+                }
+            } catch (error) {
+                // alert('Terjadi kesalahan. Periksa kembali email dan password Anda.');
+                console.error(error.response.data.msg);
 
                 Toast.show({
-                    text: 'Hello!' + error.message,
+                    text:error.response.data.msg,
                 });
-                showHelloToast();
-                alert(error.message);
-
 
                 this.error = 'Terjadi Kesalahan . Periksa kembali email dan password Anda';
 
@@ -61,9 +105,9 @@ export const useAuthStores = defineStore('authStore', {
         },
         async doLogout() {
             try {
-                const response = await axios.post(this.apiUrl + 'api/logout', null, {
+                const response = await axios.post(this.nocoUrl + 'api/v1/auth/user/signout', null, {
                     headers: {
-                        Authorization: `Bearer ${this.token}`
+                        'xc-auth': this.token
                     }
                 });
 

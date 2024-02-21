@@ -3,6 +3,15 @@
   "appName": "arisan-app",
   "webDir": "dist",
   "server": {
-    "androidScheme": "https"
+    "androidScheme": "https",
+    "allowNavigation": [
+      "https://form.unej.ac.id/*"
+    ],
+    "cleartext":"true"
+  },
+  "plugins": {
+    "CapacitorHttp": {
+      "enabled": true
+    }
   }
 }

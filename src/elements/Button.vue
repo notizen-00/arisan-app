@@ -1,8 +1,8 @@
 <template>
  
-    <a :href="url" :class="buttonClasses">
+    <button :type="url" :class="buttonClasses">
         <i :class="iconClass"></i> <span :class="textClass">{{text}}</span>
-    </a>
+    </button>
  
 </template>
 
@@ -30,7 +30,7 @@
         'border-blue-900': props.color === 'blue', 
         'border-green-900': props.color === 'green',
         'border-purple-900': props.color === 'purple',
-        'active:border-b-0': true,
+        'active:border-b-0': false,
         'bg-red-500': props.color === 'red',
         'bg-blue-500': props.color === 'blue',
         'bg-green-500':props.color === 'green',
@@ -46,11 +46,11 @@
         'px-3': true,
         'py-1': true,
         'flex': true,
-        'text-gray-100': true,
-        'hover:text-white': true,
+        'text-white': true,
+        'hover:text-slate-600': true,
         'focus:outline-none': true,
         'focus:ring-2': true,
-        'focus:ring-white': true,
+        'focus:ring-slate-200': true,
         'focus:ring-offset-2': true,
         'focus:ring-offset-gray-800': true
     };
